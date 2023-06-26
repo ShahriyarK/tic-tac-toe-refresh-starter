@@ -96,7 +96,6 @@ class Screen {
 
 
   static addCommand(key, description, action) {
-
     if (key === 'q') {
       throw new Error("you cannot overwrite 'q'");
     }

@@ -17,24 +17,69 @@ class TTT {
     Screen.initialize(3, 3);
     Screen.setGridlines(true);
 
-    // Replace this with real commands
-    Screen.addCommand('t', 'test command (remove)', TTT.testCommand);
 
+    // Replace this with real commands
+    Screen.addCommand('up', 'Moves the cursor one position up', this.cursor.up.bind(this.cursor));
+    Screen.addCommand('down', 'Moves the cursor one position down', this.cursor.down.bind(this.cursor));
+    Screen.addCommand('left', 'Moves the cursor one position left', this.cursor.left.bind(this.cursor));
+    Screen.addCommand('right', 'Moves the cursor one position right', this.cursor.right.bind(this.cursor));
+    Screen.addCommand('x', 'For marking an X', this.placeMove.bind(this, 'X'));
+    Screen.addCommand('o', 'For marking an O', this.placeMove.bind(this, 'O'));
+    this.cursor.setBackgroundColor()
     Screen.render();
   }
 
-  // Remove this
-  static testCommand() {
-    console.log("TEST COMMAND");
+  placeMove(char) {
+    Screen.setGrid(this.cursor.row, this.cursor.col, char);
+    this.grid = Screen.grid;
+    if (char === 'X') Screen.setMessage(`Its O's turn now.`)
+    else Screen.setMessage(`Its X's turn now.`)
+    const winner = TTT.checkWin(Screen.grid)
+    TTT.endGame(winner);
+    Screen.render();
+
   }
 
   static checkWin(grid) {
+    const height = grid.length;
+    // let checkGrid = false
+    let rowStart = 0;
+    let colEnd = grid[0].length - 1;
+    let leftDiagonal = [];
+    let rightDiagonal = [];
+    // let tie = true;
 
-    // Return 'X' if player X wins
-    // Return 'O' if player O wins
-    // Return 'T' if the game is a tie
-    // Return false if the game has not ended
+    for (let row = 0; row < height; row++) {
+      const width = grid[row].length;
+      let horizontal = [];
+      let vertical = [];
 
+      rightDiagonal.push(grid[rowStart][colEnd]);
+      rowStart++;
+      colEnd--;
+      for (let col = 0; col < width; col++) {
+        horizontal.push(grid[row][col]);
+        vertical.push(grid[col][row]);
+        if (col === row) leftDiagonal.push(grid[row][col]);
+        // if (grid[row][col] !== ' ') {
+        //   checkGrid = true;
+        // } else {tie = false}
+      }
+      if (getWinner(horizontal)) return getWinner(horizontal);
+      if (vertical.filter(char => char === 'O').length === height) return 'O';
+      if (getWinner(vertical)) return getWinner(vertical);
+    }
+    if (grid.every(row => row.every(col => col === ' ')) === true) return false;
+    // if (!checkGrid) return checkGrid;
+    if (getWinner(leftDiagonal)) return getWinner(leftDiagonal);
+    if (getWinner(rightDiagonal)) return getWinner(rightDiagonal);
+    if (grid.every(row => row.every(col => col !== ' ')) === true) return 'T';
+
+    return false;
+    function getWinner(array) {
+      if (array.filter(char => char === 'X').length === height) return 'X';
+      if (array.filter(char => char === 'O').length === height) return 'O';
+    }
   }
 
   static endGame(winner) {
