@@ -35,7 +35,7 @@ class TTT {
     if (char === 'X') Screen.setMessage(`Its O's turn now.`)
     else Screen.setMessage(`Its X's turn now.`)
     const winner = TTT.checkWin(Screen.grid)
-    TTT.endGame(winner);
+    if (winner) TTT.endGame(winner);
     Screen.render();
 
   }
