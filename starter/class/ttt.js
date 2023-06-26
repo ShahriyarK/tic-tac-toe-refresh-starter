@@ -41,44 +41,47 @@ class TTT {
   }
 
   static checkWin(grid) {
-    const height = grid.length;
-    // let checkGrid = false
-    let rowStart = 0;
-    let colEnd = grid[0].length - 1;
-    let leftDiagonal = [];
-    let rightDiagonal = [];
-    // let tie = true;
+    const winnerHorizontal = getHorizontal();
+    if (winnerHorizontal) return winnerHorizontal;
 
-    for (let row = 0; row < height; row++) {
-      const width = grid[row].length;
-      let horizontal = [];
-      let vertical = [];
+    const winnerVertical = getVertical();
+    if (winnerVertical) return winnerVertical;
 
-      rightDiagonal.push(grid[rowStart][colEnd]);
-      rowStart++;
-      colEnd--;
-      for (let col = 0; col < width; col++) {
-        horizontal.push(grid[row][col]);
-        vertical.push(grid[col][row]);
-        if (col === row) leftDiagonal.push(grid[row][col]);
-        // if (grid[row][col] !== ' ') {
-        //   checkGrid = true;
-        // } else {tie = false}
-      }
-      if (getWinner(horizontal)) return getWinner(horizontal);
-      if (vertical.filter(char => char === 'O').length === height) return 'O';
-      if (getWinner(vertical)) return getWinner(vertical);
-    }
-    if (grid.every(row => row.every(col => col === ' ')) === true) return false;
-    // if (!checkGrid) return checkGrid;
-    if (getWinner(leftDiagonal)) return getWinner(leftDiagonal);
-    if (getWinner(rightDiagonal)) return getWinner(rightDiagonal);
-    if (grid.every(row => row.every(col => col !== ' ')) === true) return 'T';
+    const winnerInLeftDiagonal = getLeftDiagonal();
+    if (winnerInLeftDiagonal) return winnerInLeftDiagonal;
 
+    const winnerInRightDiagonal = getRightDiagonal();
+    if (winnerInRightDiagonal) return winnerInRightDiagonal;
+
+    if (grid.every(row => row.every(col => col === ' '))) return false;
+
+    if (grid.every(row => row.every(col => col !== ' '))) return 'T';
     return false;
-    function getWinner(array) {
-      if (array.filter(char => char === 'X').length === height) return 'X';
-      if (array.filter(char => char === 'O').length === height) return 'O';
+
+    function getHorizontal() {
+      const winnerRow = grid.find(row => row.every(el => el === row[0] && row[0] !== ' '));
+      if (winnerRow) return winnerRow[0];
+    }
+
+    function getVertical() {
+      const width = grid[0].length;
+      for (let col = 0; col < width; col++) {
+        const winnerCol = grid.map(row => row[col]);
+        const checkWinner = winnerCol.every(el => el === winnerCol[0] && winnerCol[0] !== ' ');
+        if (checkWinner) return winnerCol[0];
+      }
+    }
+
+    function getLeftDiagonal() {
+      const leftDiagonal = grid.map((row, indx) => row[indx]);
+      const checkWinner = leftDiagonal.every(el => el === leftDiagonal[0] && leftDiagonal[0] !== ' ');
+      if (checkWinner) return leftDiagonal[0];
+    }
+
+    function getRightDiagonal() {
+      const rightDiagonal = grid.map((row, indx) => row[row.length - 1 - indx])
+      const checkWinner = rightDiagonal.every(el => el === rightDiagonal[0] && rightDiagonal[0] !== ' ');
+      if (checkWinner) return rightDiagonal[0];
     }
   }
 
